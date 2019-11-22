@@ -1,4 +1,4 @@
-### __Code of Conduct - Contract__  
+### __Contract__  
 
 ---
 
