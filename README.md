@@ -1,4 +1,4 @@
-# Group_105 - DSCI 532 App Creation  
+# DSCI 532 App Creation - Group 105
 
 created by: Evhen Dytyniak, Tani Barasch, and Robert Pimentel  
   
