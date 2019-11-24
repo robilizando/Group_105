@@ -14,4 +14,5 @@ These graphs will be customizable across variables that may effect bird strikes:
   
 ### Sketch:  
 
-![Sketch](https://github.com/TBarasch/Group_105/blob/master/App_Sketch_1_D1.png?raw=true)
+
+![Sketch](https://github.com/UBC-MDS/Group_105/blob/master/App_Sketch_1_D1.png)
