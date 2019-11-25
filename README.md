@@ -4,7 +4,7 @@ created by: Evhen Dytyniak, Tani Barasch, and Robert Pimentel
   
 ### Description:  
   
-The dashboard will consist of 3-5 graphs which will be arranged side by side to show the correlations and proportions relevant to answering our research questions found in the [project proposal](https://github.com/UBC-MDS/Group_105/blob/master/project_proposal.md). The graphs will focus on interactively representing the severity/number of bird strikes over several continuous and categorical variables (time, state, flight phase, etc.).
+The dashboard will consist of 3-5 graphs which will be arranged side by side to show the correlations and proportions relevant to answering our research questions found in the [project proposal](project_proposal.md). The graphs will focus on interactively representing the severity/number of bird strikes over several continuous and categorical variables (time, state, flight phase, etc.).
 
 These graphs will be customizable across variables that may effect bird strikes:  
 
@@ -15,4 +15,4 @@ These graphs will be customizable across variables that may effect bird strikes:
 ### Sketch:  
 
 
-![Sketch](https://github.com/UBC-MDS/Group_105/blob/master/App_Sketch_1_D1.png)
+![Sketch](imgs/App_Sketch_1_D1.png)
