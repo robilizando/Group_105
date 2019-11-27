@@ -24,7 +24,7 @@ app.layout = html.Div([
             {'label': 'Substantial Damage', 'value': 'Substantial'}
         ],
         multi = True,
-        value = ['Minor', 'Medium', 'Substantial']
+        value = ['Minor', 'Medium', 'Substantial'], style=dict(width='71.5%')
     ), 
 
     html.Iframe(
@@ -49,7 +49,7 @@ app.layout = html.Div([
         sandbox = 'allow-scripts',
         id = 'bar_plot',
         height = '500',
-        width = '700',
+        width = '800',
         style = {'border-width': '0'},
         ),
 
@@ -107,7 +107,7 @@ def make_line_plot(date_list, damage):
 
         line_plot_base = alt.Chart(df_line.query(query_string),
                       title = 'Bird Strike Damage over Time'
-                      ).mark_area(opacity = 0.3
+                      ).mark_area(opacity = 0.3, interpolate='monotone'
                       ).encode(
                             alt.X('year:O', axis=alt.Axis(title = "Year",
                                                           labelAngle = 0)),
@@ -149,7 +149,7 @@ def make_line_plot(date_list, damage):
                 ).transform_filter(label),
                 
                 data = df
-            ).properties(width = 600, height = 400)
+            ).properties(width = 650, height = 400)
         
         line_plot = line_plot.to_html()
     else:
@@ -190,10 +190,11 @@ def make_bar_plot(category, damage):
                                 stack = True),
                             alt.Color('damage_level',
                                     scale = alt.Scale(domain = ['Substantial', 'Medium', 'Minor', 'None'],
-                                                    range = ['red', 'dodgerblue', 'grey', 'darkgreen'])),
+                                                    range = ['red', 'dodgerblue', 'grey', 'darkgreen']),
+                                    legend = alt.Legend(title = "Damage Level")),
                             alt.Order('damage_level_sort', sort = 'ascending'),
                             alt.Tooltip(['count(damage_level)']) 
-                    ).properties(height = 400, width = 500)
+                    ).properties(height = 400, width = 650)
         
         bar_plot = bar_plot.to_html()
     
