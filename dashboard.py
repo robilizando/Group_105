@@ -15,6 +15,8 @@ server = app.server
 app.title = 'Dash app with pure Altair HTML'
 
 app.layout = html.Div([
+    #dbc.Row(
+        #[
     html.Label('Choose all Damage Levels you wish to show in plots below:'),
     dcc.Checklist(
         id = 'damage_types_dropdown',
@@ -25,7 +27,7 @@ app.layout = html.Div([
             {'label': 'Substantial Damage', 'value': 'Substantial'}
         ],
         value = ['Minor', 'Medium', 'Substantial'], style=dict(width='71.5%')
-    ), 
+    ), #width=6, style={'border':'1px solid'}
 
     html.Iframe(
         sandbox = 'allow-scripts',
