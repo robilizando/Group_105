@@ -15,7 +15,8 @@ server = app.server
 app.title = 'Dash app with pure Altair HTML'
 
 app.layout = html.Div([
-    dcc.Dropdown(
+    html.Label('Choose all Damage Levels you wish to show in plots below:'),
+    dcc.Checklist(
         id = 'damage_types_dropdown',
         options = [
             {'label': 'No Damage', 'value': 'None'},
@@ -23,7 +24,6 @@ app.layout = html.Div([
             {'label': 'Medium Damage', 'value': 'Medium'},
             {'label': 'Substantial Damage', 'value': 'Substantial'}
         ],
-        multi = True,
         value = ['Minor', 'Medium', 'Substantial'], style=dict(width='71.5%')
     ), 
 
@@ -31,10 +31,11 @@ app.layout = html.Div([
         sandbox = 'allow-scripts',
         id = 'line_plot',
         height = '500',
-        width = '800',
+        width = '850',
         style = {'border-width': '0'}
     ),
 
+    html.Label('Years:'),
     dcc.RangeSlider(
         id = 'date_slider',
         marks = {i: '{}'.format(i) for i in range(1990, 2002)},
@@ -49,10 +50,11 @@ app.layout = html.Div([
         sandbox = 'allow-scripts',
         id = 'bar_plot',
         height = '500',
-        width = '800',
+        width = '850',
         style = {'border-width': '0'},
         ),
 
+    html.Label('Choose X Variable for the Bar Chart:'),
     dcc.RadioItems(
         id = 'bar_radio',
         options = [
@@ -63,6 +65,7 @@ app.layout = html.Div([
         value = 'flight_phase'
     ),
 
+    html.Label('Choose X Variable for the Heat Map'),
     dcc.RadioItems(
         id = 'heatmap_radio',
         options = [
@@ -75,11 +78,11 @@ app.layout = html.Div([
     html.Iframe(
         sandbox = 'allow-scripts',
         id = 'heatmap_plot',
-        height = '1100',
-        width = '1000',
+        height = '950',
+        width = '870',
         style = {'border-width': '0'}
     )   
-])
+] )#, style={'columnCount': 3}) # 
 
 @app.callback(
     dash.dependencies.Output(component_id = 'line_plot', component_property = 'srcDoc'),
