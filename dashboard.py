@@ -11,20 +11,28 @@ alt.data_transformers.disable_max_rows()
 df = pd.read_csv('https://raw.githubusercontent.com/UBC-MDS/Group_105/master/data/birdstrikes_clean.csv')
 
 app = dash.Dash(__name__, assets_folder='assets', external_stylesheets=[dbc.themes.CERULEAN])
+app.config['suppress_callback_exceptions'] = True
+
 server = app.server
+app.title = 'Aircraft Birdstrikes in the USA'
 
-app.title = 'Dash app with pure Altair HTML'
 
-title_block = dbc.Jumbotron(
+#----------------------------------------------------------------------
+# DBC and DASH Components
+#===================================
+
+title_header = dbc.Jumbotron(
     [
         dbc.Container(
             [
-                html.Img(src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Unico_Anello.png/1920px-Unico_Anello.png', 
-                      width='100px')
-                #html.H1("Cars! Cars! Explore Cars!", className="display-3"),
-                #html.P(
-                #    "Add a description of the dashboard",
-                #    className="lead",
+                # html.Img(src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Unico_Anello.png/1920px-Unico_Anello.png', 
+                #       width='100px'),
+                 html.H1("Aircraft Bird Strike in USA", className="display-3"),
+                # html.P(
+                #     "Add a description of the dashboard",
+                #     className="lead",
+                # ),
+ 
             ],
             fluid=True,
         )
@@ -32,117 +40,178 @@ title_block = dbc.Jumbotron(
     fluid=True,
 )
 
-content = dbc.Container([
-    dbc.Row([
-                dbc.Col(
+dropdown_selector = dcc.Dropdown(
+    id = 'damage_types_dropdown',
+    options = [
+        {'label': 'No Damage', 'value': 'None'},
+        {'label': 'Minor Damage', 'value': 'Minor'},
+        {'label': 'Medium Damage', 'value': 'Medium'},
+        {'label': 'Substantial Damage', 'value': 'Substantial'}
+    ],
+    multi = True,
+    value = []
+    #value = ['Minor', 'Medium', 'Substantial']
+)
 
-                    #SELECTORS
+rangeslider_selector = dcc.RangeSlider(
+    id = 'date_slider',
+    marks = {i: '{}'.format(i) for i in range(1990, 2002)},
+    count = 12,
+    min = 1990,
+    max = 2002,
+    step = 1,
+    value = [1990, 2002]
+)
 
-                    html.Label('Choose all Damage Levels you wish to show in plots below:'),
-                    dcc.Checklist(
-                        id = 'damage_types_dropdown',
-                        options = [
-                            {'label': 'No Damage', 'value': 'None'},
-                            {'label': 'Minor Damage', 'value': 'Minor'},
-                            {'label': 'Medium Damage', 'value': 'Medium'},
-                            {'label': 'Substantial Damage', 'value': 'Substantial'}
-                        ],
-                        value = ['Minor', 'Medium', 'Substantial']
-                    ),
+radio_barchart = dcc.RadioItems(
+    id = 'bar_radio',
+    options = [
+        {'label': 'Flight Phase', 'value': 'flight_phase'},
+        {'label': 'Time of Day', 'value': 'time_of_day'},
+        {'label': 'Bird Size', 'value': 'bird_size'}
+    ],
+    value = 'flight_phase'
+)
 
+radio_heatmap = dcc.RadioItems(
+    id = 'heatmap_radio',
+    options = [
+        {'label': 'State', 'value': 'state'},
+        {'label': 'Airport', 'value': 'airport'},
+    ],
+    value = 'state'
+)
 
-                    html.Label('Years:'),
-                    dcc.RangeSlider(
-                        id = 'date_slider',
-                        marks = {i: '{}'.format(i) for i in range(1990, 2002)},
-                        count = 12,
-                        min = 1990,
-                        max = 2002,
-                        step = 1,
-                        value = [1990, 2002]
-                    ),
+line = html.Iframe( 
+    sandbox = 'allow-scripts',
+    id = 'line_plot',
+    height = '650',
+    width = '850',
+    style = {'border-width': '0'}
+)
 
+bar = html.Iframe(
+    sandbox = 'allow-scripts',
+    id = 'bar_plot',
+    height = '650',
+    width = '750',
+    style = {'border-width': '0'}
+)
 
-                    html.Label('Choose X Variable for the Bar Chart:'),
-                    dcc.RadioItems(
-                        id = 'bar_radio',
-                        options = [
-                            {'label': 'Flight Phase', 'value': 'flight_phase'},
-                            {'label': 'Time of Day', 'value': 'time_of_day'},
-                            {'label': 'Bird Size', 'value': 'bird_size'}
-                        ],
-                        value = 'flight_phase'
-                    ),
+heatmap = html.Iframe(
+    sandbox = 'allow-scripts',
+    id = 'heatmap_plot',
+    height = '1100',
+    width = '1000',
+    style = {'border-width': '0'}
+) 
+ 
 
-
-                    html.Label('Choose X Variable for the Heat Map'),
-                    dcc.RadioItems(
-                        id = 'heatmap_radio',
-                        options = [
-                            {'label': 'State', 'value': 'state'},
-                            {'label': 'Airport', 'value': 'airport'},
-                        ],
-                        value = 'state'
-                    )
-                    ]),
-
-                dbc.Col([
-
-                    dbc.Row([
-
-                        dbc.Col(
-
-                            #ADD GRAPH 1 Line Plot
-
-                            html.Iframe(
-                                sandbox = 'allow-scripts',
-                                id = 'line_plot',
-                                height = '500',
-                                width = '850',
-                                style = {'border-width': '0'}
-                            )
-                        , width=5 ),
-
-                        dbc.Col(
-
-                        #ADD GRAPH 2 Bar Plot
-
-                            html.Iframe(
-                                sandbox = 'allow-scripts',
-                                id = 'bar_plot',
-                                height = '500',
-                                width = '850',
-                                style = {'border-width': '0'},
-                            )
-
-                        , width=5), 
-                    ]),
-
-                    dbc.Row(
-
-                        dbc.Container([
-
-                        #ADD GRAPH 3 Heat Map
-
-                         html.Iframe(
-                            sandbox = 'allow-scripts',
-                            id = 'heatmap_plot',
-                            height = '950',
-                            width = '870',
-                            style = {'border-width': '0'}
-                        )
-
-                        ])
-
-
-                    )
-                ], width=2)
-            ])
+selectors =  dbc.Container(fluid = True, children = [dbc.Row([
+        dbc.Col(children = [
+            html.H4("Select Damage Type(s) to Generate Plot"),
+            html.H6("(required: update selection when switching tabs)"),
+            dropdown_selector,
+            html.Br(),
+            rangeslider_selector,
+            html.Br(), html.Br(),
+            radio_barchart,
+            html.Br(),
+            radio_heatmap],
+        ),
     ])
+ ])
 
-app.layout = html.Div([title_block,
-                       content])
 
+#--------------------------------------------------------------------------------
+#USING dbc TABS below - 
+#==================================
+# tab1_content = dbc.Card(
+#     dbc.CardBody(
+#         [
+#             dbc.Container(fluid = True, children = [
+#                 dbc.Row(children = [ 
+#                     dbc.Col(children = [
+#                         line], #width = 6
+#                     ),
+#                     dbc.Col(children = [
+#                         bar], #width = 6
+#                     ),
+#                 ]),           
+#             ])
+#         ]
+#     ),
+#     className="mt-3",
+# )
+
+# tab2_content = dbc.Card(
+#     dbc.CardBody(
+#         [
+#             dbc.Container(fluid = True, children = [
+#                 dbc.Row(children =[
+#                     dbc.Col(children = [
+#                         heatmap]
+#                     )
+#                 ])  
+#             ])  
+#         ]
+#     ),
+#     className="mt-3",
+# )
+
+# tabs = dbc.Tabs(
+#     [
+#         dbc.Tab(children = [tab1_content], label="Factors"),
+#         dbc.Tab(children = [tab2_content], label="Airports / States")
+#     ]
+# )
+#--------------------------------------------------------------------------------
+#USING html TABS below
+#===================================
+tabs = \
+html.Div(children = [
+    dcc.Tabs(id="tabs", value='tab-1', children=[
+        dcc.Tab(label='Factors', value='tab-1'),
+        dcc.Tab(label='Airports / States', value='tab-2'),
+    ]),
+    html.Div(id='tabs-content')
+])
+
+@app.callback(Output(component_id ='tabs-content',component_property = 'children'),
+              [Input(component_id = 'tabs', component_property = 'value')])
+def display_tabs(tab):
+    if tab == 'tab-1':
+        tab_1_container = dbc.Container(fluid = True, children = [
+            dbc.Row(children = [ 
+                dbc.Col(children = [
+                    line], #width = 6
+                ),
+                dbc.Col(children = [
+                    bar], #width = 6
+                ),
+            ]),           
+        ])
+        return tab_1_container
+        
+    elif tab == 'tab-2':
+        tab_2_container = dbc.Container(fluid = True, children = [
+            dbc.Row(children =[
+                dbc.Col(children = [
+                    heatmap]
+                )
+            ])  
+        ])  
+        return tab_2_container
+#--------------------------------------------------------------------------------
+
+
+app.layout = html.Div([title_header,
+                       selectors,
+                       tabs])
+
+#--------------------------------------------------------------------------------
+# CALLBACKS
+#==========================
 
 @app.callback(
     dash.dependencies.Output(component_id = 'line_plot', component_property = 'srcDoc'),
@@ -170,7 +239,7 @@ def make_line_plot(date_list, damage):
 
         line_plot_base = alt.Chart(df_line.query(query_string),
                       title = 'Bird Strike Damage over Time'
-                      ).mark_area(opacity = 0.3, interpolate='monotone'
+                      ).mark_area(opacity = 0.3
                       ).encode(
                             alt.X('year:O', axis=alt.Axis(title = "Year",
                                                           labelAngle = 0)),
@@ -181,7 +250,9 @@ def make_line_plot(date_list, damage):
                                       #sort = ['Substantial', 'Medium', 'Minor', 'None'],
                                       scale = alt.Scale(domain = ['Substantial', 'Medium', 'Minor', 'None'],
                                                         range = ['red', 'dodgerblue', 'grey', 'darkgreen']),
-                                      legend = alt.Legend(title = "Damage Level")),
+                                      legend = alt.Legend(orient='bottom', 
+                                                            titleOrient='left',
+                                                            title = "Damage Level")),
                                                           #orient = 'none', 
                                                           #legendX = 675, legendY = 10, 
                                                           #fillColor = 'white')),
@@ -212,7 +283,7 @@ def make_line_plot(date_list, damage):
                 ).transform_filter(label),
                 
                 data = df
-            ).properties(width = 650, height = 400)
+            ).properties(width = 600, height = 500)
         
         line_plot = line_plot.to_html()
     else:
@@ -254,10 +325,12 @@ def make_bar_plot(category, damage):
                             alt.Color('damage_level',
                                     scale = alt.Scale(domain = ['Substantial', 'Medium', 'Minor', 'None'],
                                                     range = ['red', 'dodgerblue', 'grey', 'darkgreen']),
-                                    legend = alt.Legend(title = "Damage Level")),
+                                    legend = alt.Legend(orient='bottom', 
+                                                        titleOrient='left', 
+                                                        title = "Damage Level")),
                             alt.Order('damage_level_sort', sort = 'ascending'),
                             alt.Tooltip(['count(damage_level)']) 
-                    ).properties(height = 400, width = 650)
+                    ).properties(width = 600, height = 500)
         
         bar_plot = bar_plot.to_html()
     
@@ -265,7 +338,6 @@ def make_bar_plot(category, damage):
         bar_plot = None
         
     return bar_plot
-
 
 @app.callback(
     dash.dependencies.Output(component_id = 'heatmap_plot', component_property = 'srcDoc'),
