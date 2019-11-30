@@ -17,6 +17,7 @@ server = app.server
 app.title = 'Aircraft Birdstrikes in the USA'
 
 
+
 #----------------------------------------------------------------------
 # DBC and DASH Components
 #===================================
@@ -25,14 +26,30 @@ title_header = dbc.Jumbotron(
     [
         dbc.Container(
             [
-                # html.Img(src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Unico_Anello.png/1920px-Unico_Anello.png', 
-                #       width='100px'),
-                 html.H1("Aircraft Bird Strike in the USA", className="display-3"),
-                # html.P(
-                #     "Add a description of the dashboard",
-                #     className="lead",
-                # ),
- 
+                dbc.Row([
+                    dbc.Col([
+                        html.Img(src='https://cdn.pixabay.com/photo/2012/04/16/13/55/swans-36088_960_720.png', 
+                            width='100%')
+                       ], width = 2),
+                    dbc.Col([
+                        html.H1("Aircraft Bird Strikes"),#, className="display-3"),                 
+                        dcc.Markdown(
+                            '''
+                            The purpose of the app is to investigate the effect of birdstrikes on aircraft between 1990 and 2002 in the United States.   
+                            Different factors (flight phase, time of day, and bird size) and regions (states / airports) are explored, visualizing four classes of damage to aircraft.   
+
+
+                            The aim of __Tab 1__ is to visualize the trend of number of and damage caused by birdstrikes between 1990 and 2002.   
+                            The visualizations in this tab explore what factors effect the number and of and damage caused by bird strikes.
+
+                            The aim of __Tab 2__ is to explore which states and airports observed the largest number of bird strikes between 1990 and 2002.
+
+                            '''
+                        )
+                        
+                    ])
+                 ]),
+
             ],
             fluid=True,
         )
@@ -127,32 +144,67 @@ heatmap = html.Iframe(
 selectors_tab1 =  dbc.Container(fluid = True, 
     children = [dbc.Row([
         dbc.Col(children = [
-            html.H4("Damage Type"),
-            #html.H6("(required: update selection when switching tabs)"),
+            html.H5("Damage Type"),
             dropdown_selector_tab1,
             html.Br()
         ])
     ]),
     dbc.Row(children = [
         dbc.Col(children = [
-            html.H4("Date Range Between 1990 - 2002"),
+            html.H5("Date Range Between 1990 - 2002"),
             rangeslider_selector,
             html.Br()]),
         dbc.Col([
-            html.H4("Factor"),
+            html.H5("Factor"),
             radio_barchart,
             html.Br()],
         ),
-    ])
+    ]),
+    dbc.Row([
+        dbc.Col([
+            html.Hr()
+        ])
+    ]),
+    dbc.Row([
+        dcc.Markdown(
+            '''
+            __Example Questions__  
+            The following visualization can help solving many problems. Using the interactive tools above, try answering the following:    
+
+            - How has the number of bird strikes causing substantial damage changed between 1994 and 1999?    
+            - What is the difference between birdstrikes causing minor damage and medium damage in 1996?   
+            - What time of day results in the most birdstrikes causing substantial damage?  
+            - What is the difference between the number of large bird and small bird birdstrikes that cause no damage?  
+            '''
+        )
+    ]),
+    dbc.Row([
+        dbc.Col([
+            html.Hr()
+        ])
+    ]),
  ])
 
 selectors_tab2 =  dbc.Container(fluid = True, children = [dbc.Row([
         dbc.Col(children = [
-            html.H4("Damage Type"),
+            html.H5("Damage Type"),
             dropdown_selector_tab2,
             html.Br(),
-            html.H4("Location Type"),
-            radio_heatmap],
+            html.H5("Location Type"),
+            radio_heatmap,
+            html.Hr(),
+            dcc.Markdown(
+            '''
+            __Example Questions__  
+            The following visualization can help solving many problems. Using the interactive tools above, try answering the following:    
+
+            - What state experienced the most birdstrikes and in what year?  
+            - What airport experienced the most birdstrikes and in what year and state did this occur?  
+            - What states experienced the most birdstrikes causing minor damage and in what year did this occur?
+            '''
+            ),
+            html.Hr()
+            ],
         ),
     ])
  ])
@@ -206,8 +258,8 @@ selectors_tab2 =  dbc.Container(fluid = True, children = [dbc.Row([
 tabs = \
 html.Div(children = [
     dcc.Tabs(id="tabs", value='tab-1', children=[
-        dcc.Tab(label='Bird Strikes by Factor', value='tab-1'),
-        dcc.Tab(label='Bird Strikes by Location', value='tab-2'),
+        dcc.Tab(label='Tab 1 - Bird Strikes Trends & Factors', value='tab-1'),
+        dcc.Tab(label='Tab 2- Bird Strikes by Location', value='tab-2'),
     ]),
     html.Div(id='tabs-content')#, style = {'backgroundColor':'tan'})
 ])
@@ -241,7 +293,12 @@ def display_tabs(tab):
 
 
 app.layout = html.Div([title_header,
-                       tabs])
+                       tabs,
+                       dcc.Markdown(
+                           '''
+                           [Photo Attribution](https://pixabay.com/vectors/swans-silhouette-black-flying-36088/)
+                           '''
+                       )])
 
 #--------------------------------------------------------------------------------
 # CALLBACKS
@@ -265,15 +322,15 @@ def make_line_plot(date_list, damage):
 
     if len(query_string) != 0:
         label = alt.selection_single(
-            encodings = ['x'], # limit selection to x-axis value
-            on = 'mouseover',  # select on mouseover events
-            nearest = True,    # select data point nearest the cursor
-            empty = 'none'     # empty selection includes no data points
+            encodings = ['x'], 
+            on = 'mouseover',  
+            nearest = True,    
+            empty = 'none'     
         )
 
         line_plot_base = alt.Chart(df_line.query(query_string),
                       title = 'Bird Strike Damage over Time'
-                      ).mark_area(opacity = 0.3
+                      ).mark_area(opacity = 0.3, interpolate = 'monotone'
                       ).encode(
                             alt.X('year:O', axis=alt.Axis(title = "Year",
                                                           labelAngle = 0)),
@@ -306,13 +363,17 @@ def make_line_plot(date_list, damage):
 
                 line_plot_base.mark_text(align = 'left', 
                                     dx = 5, dy = -10,
+                                    fontSize = 15,
+                                    fontWeight = 600,
                                     stroke = 'grey', 
                                     strokeWidth = 1
                 ).encode( text = 'count(damage_level):N'
                 ).transform_filter(label),
                 
                 line_plot_base.mark_text(align = 'left', 
-                                    dx = 5, dy = -10
+                                    dx = 5, dy = -10,
+                                    fontSize = 15,
+                                    fontWeight= 600
                 ).encode(text='count(damage_level):N'
                 ).transform_filter(label),
                 
