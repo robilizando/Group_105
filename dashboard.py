@@ -27,7 +27,7 @@ title_header = dbc.Jumbotron(
             [
                 # html.Img(src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Unico_Anello.png/1920px-Unico_Anello.png', 
                 #       width='100px'),
-                 html.H1("Aircraft Bird Strike in USA", className="display-3"),
+                 html.H1("Aircraft Bird Strike in the USA", className="display-3"),
                 # html.P(
                 #     "Add a description of the dashboard",
                 #     className="lead",
@@ -40,8 +40,8 @@ title_header = dbc.Jumbotron(
     fluid=True,
 )
 
-dropdown_selector = dcc.Dropdown(
-    id = 'damage_types_dropdown',
+dropdown_selector_tab1 = dcc.Dropdown(
+    id = 'damage_types_dropdown_tab1',
     options = [
         {'label': 'No Damage', 'value': 'None'},
         {'label': 'Minor Damage', 'value': 'Minor'},
@@ -49,8 +49,23 @@ dropdown_selector = dcc.Dropdown(
         {'label': 'Substantial Damage', 'value': 'Substantial'}
     ],
     multi = True,
-    value = []
-    #value = ['Minor', 'Medium', 'Substantial']
+    #value = []
+    value = ['Minor', 'Medium', 'Substantial'],
+    style = dict(width = '60%')
+)
+
+dropdown_selector_tab2 = dcc.Dropdown(
+    id = 'damage_types_dropdown_tab2',
+    options = [
+        {'label': 'No Damage', 'value': 'None'},
+        {'label': 'Minor Damage', 'value': 'Minor'},
+        {'label': 'Medium Damage', 'value': 'Medium'},
+        {'label': 'Substantial Damage', 'value': 'Substantial'}
+    ],
+    multi = True,
+    #value = []
+    value = ['None', 'Minor', 'Medium', 'Substantial'],
+    style = dict(width = '60%')
 )
 
 rangeslider_selector = dcc.RangeSlider(
@@ -63,23 +78,25 @@ rangeslider_selector = dcc.RangeSlider(
     value = [1990, 2002]
 )
 
-radio_barchart = dcc.RadioItems(
+radio_barchart = dcc.Dropdown(
     id = 'bar_radio',
     options = [
         {'label': 'Flight Phase', 'value': 'flight_phase'},
         {'label': 'Time of Day', 'value': 'time_of_day'},
         {'label': 'Bird Size', 'value': 'bird_size'}
     ],
-    value = 'flight_phase'
+    value = 'flight_phase',
+    style = dict(width = '48%')
 )
 
-radio_heatmap = dcc.RadioItems(
+radio_heatmap = dcc.Dropdown(
     id = 'heatmap_radio',
     options = [
         {'label': 'State', 'value': 'state'},
         {'label': 'Airport', 'value': 'airport'},
     ],
-    value = 'state'
+    value = 'state',
+    style = dict(width = '30%')
 )
 
 line = html.Iframe( 
@@ -107,16 +124,34 @@ heatmap = html.Iframe(
 ) 
  
 
-selectors =  dbc.Container(fluid = True, children = [dbc.Row([
+selectors_tab1 =  dbc.Container(fluid = True, 
+    children = [dbc.Row([
         dbc.Col(children = [
-            html.H4("Select Damage Type(s) to Generate Plot"),
-            html.H6("(required: update selection when switching tabs)"),
-            dropdown_selector,
-            html.Br(),
+            html.H4("Damage Type"),
+            #html.H6("(required: update selection when switching tabs)"),
+            dropdown_selector_tab1,
+            html.Br()
+        ])
+    ]),
+    dbc.Row(children = [
+        dbc.Col(children = [
+            html.H4("Date Range Between 1990 - 2002"),
             rangeslider_selector,
-            html.Br(), html.Br(),
+            html.Br()]),
+        dbc.Col([
+            html.H4("Factor"),
             radio_barchart,
+            html.Br()],
+        ),
+    ])
+ ])
+
+selectors_tab2 =  dbc.Container(fluid = True, children = [dbc.Row([
+        dbc.Col(children = [
+            html.H4("Damage Type"),
+            dropdown_selector_tab2,
             html.Br(),
+            html.H4("Location Type"),
             radio_heatmap],
         ),
     ])
@@ -171,10 +206,10 @@ selectors =  dbc.Container(fluid = True, children = [dbc.Row([
 tabs = \
 html.Div(children = [
     dcc.Tabs(id="tabs", value='tab-1', children=[
-        dcc.Tab(label='Factors', value='tab-1'),
-        dcc.Tab(label='Airports / States', value='tab-2'),
+        dcc.Tab(label='Bird Strikes by Factor', value='tab-1'),
+        dcc.Tab(label='Bird Strikes by Location', value='tab-2'),
     ]),
-    html.Div(id='tabs-content')
+    html.Div(id='tabs-content')#, style = {'backgroundColor':'tan'})
 ])
 
 @app.callback(Output(component_id ='tabs-content',component_property = 'children'),
@@ -191,7 +226,7 @@ def display_tabs(tab):
                 ),
             ]),           
         ])
-        return tab_1_container
+        return [selectors_tab1, tab_1_container]
         
     elif tab == 'tab-2':
         tab_2_container = dbc.Container(fluid = True, children = [
@@ -201,12 +236,11 @@ def display_tabs(tab):
                 )
             ])  
         ])  
-        return tab_2_container
+        return [selectors_tab2, tab_2_container]
 #--------------------------------------------------------------------------------
 
 
 app.layout = html.Div([title_header,
-                       selectors,
                        tabs])
 
 #--------------------------------------------------------------------------------
@@ -216,7 +250,7 @@ app.layout = html.Div([title_header,
 @app.callback(
     dash.dependencies.Output(component_id = 'line_plot', component_property = 'srcDoc'),
     [dash.dependencies.Input(component_id = 'date_slider', component_property = 'value'),
-    dash.dependencies.Input(component_id = 'damage_types_dropdown', component_property = 'value')
+    dash.dependencies.Input(component_id = 'damage_types_dropdown_tab1', component_property = 'value')
     ]
 )
 def make_line_plot(date_list, damage):
@@ -294,7 +328,7 @@ def make_line_plot(date_list, damage):
 @app.callback(
     dash.dependencies.Output(component_id = 'bar_plot', component_property = 'srcDoc'),
     [dash.dependencies.Input(component_id = 'bar_radio', component_property = 'value'),
-    dash.dependencies.Input(component_id = 'damage_types_dropdown', component_property = 'value')
+    dash.dependencies.Input(component_id = 'damage_types_dropdown_tab1', component_property = 'value')
     ]
 )
 def make_bar_plot(category, damage):
@@ -342,7 +376,7 @@ def make_bar_plot(category, damage):
 @app.callback(
     dash.dependencies.Output(component_id = 'heatmap_plot', component_property = 'srcDoc'),
     [dash.dependencies.Input(component_id = 'heatmap_radio', component_property = 'value'),
-    dash.dependencies.Input(component_id = 'damage_types_dropdown', component_property = 'value')
+    dash.dependencies.Input(component_id = 'damage_types_dropdown_tab2', component_property = 'value')
     ]
 )
 def make_heatmap_plot(y_category, damage):
