@@ -4,15 +4,33 @@ created by: Evhen Dytyniak, Tani Barasch, and Robert Pimentel
   
 ### Description:  
   
-The dashboard will consist of 3-5 graphs which will be arranged side by side to show the correlations and proportions relevant to answering our research questions found in the [project proposal](project_proposal.md). The graphs will focus on interactively representing the severity/number of bird strikes over several continuous and categorical variables (time, state, flight phase, etc.).
+The dashboard consists of 3 graphs arranged in two seperate tabs....
 
-These graphs will be customizable across variables that may effect bird strikes:  
+##### "Bird Strikes by Factor" tab: 
+An area chart and a bar chart side by side, showing 
+**Damage Type**: multi-choice dropdown menu, located in the top left of the screen to choose which damage types to be showen in the graphs (any combination of the 4 options), each assigned a different color.
 
-- One example is the ability to customize the time scale of the graphs; an example of this is switching between Year and Month along the X axis of the heatmap, allowing for a change over the year's perspective, or alternatively a yearly cycle perspective.  
+**Date Range Between**: slider bar, located above the area chart, allows for customization of range of years for which to show data.
 
-- Another options is to highlight certain subgroups within the data, either by filtering out or highlighting in the colour of the relavent sub-groups. This will allow the user to visually see how the different factors/subgroups (times of day, flight phase, etc) relate to bird strikes.  
-  
-### Sketch:  
+**Factor**: dropdown, located above the bar chart, allows choosing X-axis variable for the bar chart.
+In this tab, the left graph shows the number of birdstrikes over time, with the different damage levels coluored. And on the right a bar chart showing the number of birdstrikes (Y axis) over one of three cetegories: 'Flight Phase', 'Time of Day', or "Bird Size".
+
+Image of the tab below:
+
+!["Bird Strikes by Factor"](https://github.com/TBarasch/Group_105/blob/master/imgs/2_charts.jpg?raw=true)
 
 
-![Sketch](imgs/App_Sketch_1_D1.png)
+
+##### "Bird Strikes Location" tab:
+A single heatmap that shows number of strikes over time (X axis) by location (Y axis), allowing for the following costumization:
+
+**Damage Type**: multi-choice dropdown menu, located in the top left of the screen to choose which damage types to be showen in the graphs (any combination of the 4 options), each assigned a different color.
+
+**Location Type**: dropdown, located above the heatmap chart, allowes for specification of one of two types of location, the State or the Airport from which the flight took off.
+
+Image of the tab below:
+![](https://github.com/TBarasch/Group_105/blob/master/imgs/heatmap.jpg?raw=true)
+
+
+
+Original [project proposal](project_proposal.md).
