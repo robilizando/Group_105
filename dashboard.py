@@ -34,11 +34,7 @@ title_block = dbc.Jumbotron(
 
 content = dbc.Container([
     dbc.Row([
-                dbc.Col(
-
-                    #SELECTORS
-
-                    html.Label('Choose all Damage Levels you wish to show in plots below:'),
+            html.Label('Choose all Damage Levels you wish to show in plots below:'),
                     dcc.Checklist(
                         id = 'damage_types_dropdown',
                         options = [
@@ -48,10 +44,50 @@ content = dbc.Container([
                             {'label': 'Substantial Damage', 'value': 'Substantial'}
                         ],
                         value = ['Minor', 'Medium', 'Substantial']
-                    ),
+                    )
+            ]),
 
+    dbc.Row([
 
-                    html.Label('Years:'),
+        dbc.Col(
+
+                        #ADD GRAPH 1 Line Plot
+
+                        html.Iframe(
+                            sandbox = 'allow-scripts',
+                            id = 'line_plot',
+                            height = '500',
+                            width = '850',
+                            style = {'border-width': '0'}
+                        )
+                    , width=5 
+        ),
+        
+
+            
+            
+            
+        dbc.Col(
+
+                # Graph Bar Plot
+
+                html.Iframe(
+                            sandbox = 'allow-scripts',
+                            id = 'bar_plot',
+                            height = '500',
+                            width = '850',
+                            style = {'border-width': '0'},
+                        )
+
+                    , width=5
+        )
+    ]),
+        
+        dbc.Row([
+
+                dbc.Col(
+
+                        html.Label('Years:'),
                     dcc.RangeSlider(
                         id = 'date_slider',
                         marks = {i: '{}'.format(i) for i in range(1990, 2002)},
@@ -60,10 +96,12 @@ content = dbc.Container([
                         max = 2002,
                         step = 1,
                         value = [1990, 2002]
-                    ),
+                        )
+                ),
 
+                dbc.Col(
 
-                    html.Label('Choose X Variable for the Bar Chart:'),
+                        html.Label('Choose X Variable for the Bar Chart:'),
                     dcc.RadioItems(
                         id = 'bar_radio',
                         options = [
@@ -72,55 +110,25 @@ content = dbc.Container([
                             {'label': 'Bird Size', 'value': 'bird_size'}
                         ],
                         value = 'flight_phase'
-                    ),
+                        )
+                )
+        ]),
 
+        dbc.Row([
 
-                    html.Label('Choose X Variable for the Heat Map'),
-                    dcc.RadioItems(
-                        id = 'heatmap_radio',
-                        options = [
-                            {'label': 'State', 'value': 'state'},
-                            {'label': 'Airport', 'value': 'airport'},
-                        ],
-                        value = 'state'
-                    )
-                    ]),
+                dbc.Col(
+                        html.Label('Choose X Variable for the Heat Map'),
+                        dcc.RadioItems(
+                            id = 'heatmap_radio',
+                            options = [
+                                {'label': 'State', 'value': 'state'},
+                                {'label': 'Airport', 'value': 'airport'},
+                            ],
+                            value = 'state'
+                        )
+                ),
 
-                dbc.Col([
-
-                    dbc.Row([
-
-                        dbc.Col(
-
-                            #ADD GRAPH 1 Line Plot
-
-                            html.Iframe(
-                                sandbox = 'allow-scripts',
-                                id = 'line_plot',
-                                height = '500',
-                                width = '850',
-                                style = {'border-width': '0'}
-                            )
-                        , width=5 ),
-
-                        dbc.Col(
-
-                        #ADD GRAPH 2 Bar Plot
-
-                            html.Iframe(
-                                sandbox = 'allow-scripts',
-                                id = 'bar_plot',
-                                height = '500',
-                                width = '850',
-                                style = {'border-width': '0'},
-                            )
-
-                        , width=5), 
-                    ]),
-
-                    dbc.Row(
-
-                        dbc.Container([
+                dbc.Col(
 
                         #ADD GRAPH 3 Heat Map
 
@@ -132,13 +140,9 @@ content = dbc.Container([
                             style = {'border-width': '0'}
                         )
 
-                        ])
-
-
-                    )
-                ], width=2)
-            ])
-    ])
+                )
+        ])
+])
 
 app.layout = html.Div([title_block,
                        content])
