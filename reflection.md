@@ -12,3 +12,5 @@ Addressing the peer feedback for lab 4 of viz-1:
 2. Did not implement the second suggestion, team believes it is more valuable to easily compare the different types of damage on the same plot, even if only proportionally, rather then seeing 4 separate plots 
 3. Added some written explanation to what is being shown in each pane/graph to make things more clear for the user
 
+Did not implament peer feedback from thursdays lab, it was already thursday....
+
