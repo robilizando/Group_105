@@ -33,8 +33,7 @@ title_block = dbc.Jumbotron(
     fluid=True,
 )
 
-content = dbc.Container(
-    [
+content = dbc.Container([
 
         dbc.Row([ #Row_1: Main Damage Control
 
@@ -83,7 +82,7 @@ content = dbc.Container(
         dbc.Row([ # Row_3: Controlers for Row 2 Plots
 
                 #Year Date Slider Controler
-                dbc.Col(
+                dbc.Row(
 
                     html.Label('Years:'),
 
