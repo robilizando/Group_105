@@ -17,56 +17,46 @@ server = app.server
 app.title = 'Aircraft Birdstrikes in the USA'
 
 
-
-#----------------------------------------------------------------------
-# DBC and DASH Components
+# DBC & HTML COMPONENTS
 #===================================
 
-title_header = dbc.Jumbotron(
-    [
-        dbc.Container(
-            [
-                dbc.Row([
-                    dbc.Col([
-                        html.Img(src='https://cdn.pixabay.com/photo/2012/04/16/13/55/swans-36088_960_720.png', 
-                            width='100%')
-                       ], width = 2),
-                    dbc.Col([
-                        html.H1("Aircraft Bird Strikes"),#, className="display-3"),                 
-                        dcc.Markdown(
-                            '''
-                            The purpose of the app is to investigate the effect of birdstrikes on aircraft between 1990 and 2002 in the United States.   
-                            Different factors (flight phase, time of day, and bird size) and regions (states / airports) are explored, visualizing four classes of damage to aircraft.   
+title_header = dbc.Jumbotron(fluid = True, children = [
+    dbc.Container(fluid = True, children = [
+            dbc.Row([
+                dbc.Col([
+                    html.Img(src='https://cdn.pixabay.com/photo/2012/04/16/13/55/swans-36088_960_720.png', 
+                        width='100%')
+                ], width = 2),
+                dbc.Col([
+                    html.H1("Aircraft Bird Strikes"),#, className="display-3"),                 
+                    dcc.Markdown(
+                        '''
+                        The purpose of the app is to investigate the effect of birdstrikes on aircraft between 1990 and 2002 in the United States for 29 states.   
+                        Different factors (flight phase, time of day, bird size) and regions (states, airports) are explored, visualizing four classes of damage to aircraft.   
 
 
-                            The aim of __Tab 1__ is to visualize the trend of number of and damage caused by birdstrikes between 1990 and 2002.   
-                            The visualizations in this tab explore what factors effect the number and of and damage caused by bird strikes.
+                        The aim of __Tab 1__ is to visualize the trend of, number of, and damage caused by birdstrikes between 1990 and 2002.   
+                        The visualizations in this tab explore what factors affect the number and of and damage caused by bird strikes.
 
-                            The aim of __Tab 2__ is to explore which states and airports observed the largest number of bird strikes between 1990 and 2002.
+                        The aim of __Tab 2__ is to explore which states and airports observed the largest number of bird strikes between 1990 and 2002.
 
-                            '''
-                        )
-                        
-                    ])
-                 ]),
-
-            ],
-            fluid=True,
-        )
-    ],
-    fluid=True,
+                        '''
+                    )  
+                ])
+            ]),
+        ],
+    )],
 )
 
 dropdown_selector_tab1 = dcc.Dropdown(
     id = 'damage_types_dropdown_tab1',
     options = [
-        {'label': 'No Damage', 'value': 'None'},
+        {'label': 'None Damage', 'value': 'None'},
         {'label': 'Minor Damage', 'value': 'Minor'},
         {'label': 'Medium Damage', 'value': 'Medium'},
         {'label': 'Substantial Damage', 'value': 'Substantial'}
     ],
     multi = True,
-    #value = []
     value = ['Minor', 'Medium', 'Substantial'],
     style = dict(width = '60%')
 )
@@ -74,13 +64,12 @@ dropdown_selector_tab1 = dcc.Dropdown(
 dropdown_selector_tab2 = dcc.Dropdown(
     id = 'damage_types_dropdown_tab2',
     options = [
-        {'label': 'No Damage', 'value': 'None'},
+        {'label': 'None Damage', 'value': 'None'},
         {'label': 'Minor Damage', 'value': 'Minor'},
         {'label': 'Medium Damage', 'value': 'Medium'},
         {'label': 'Substantial Damage', 'value': 'Substantial'}
     ],
     multi = True,
-    #value = []
     value = ['None', 'Minor', 'Medium', 'Substantial'],
     style = dict(width = '60%')
 )
@@ -95,8 +84,8 @@ rangeslider_selector = dcc.RangeSlider(
     value = [1990, 2002]
 )
 
-radio_barchart = dcc.Dropdown(
-    id = 'bar_radio',
+dropdown_barchart = dcc.Dropdown(
+    id = 'bar_dropdown',
     options = [
         {'label': 'Flight Phase', 'value': 'flight_phase'},
         {'label': 'Time of Day', 'value': 'time_of_day'},
@@ -106,8 +95,8 @@ radio_barchart = dcc.Dropdown(
     style = dict(width = '48%')
 )
 
-radio_heatmap = dcc.Dropdown(
-    id = 'heatmap_radio',
+dropdown_heatmap = dcc.Dropdown(
+    id = 'heatmap_dropdown',
     options = [
         {'label': 'State', 'value': 'state'},
         {'label': 'Airport', 'value': 'airport'},
@@ -119,16 +108,16 @@ radio_heatmap = dcc.Dropdown(
 line = html.Iframe( 
     sandbox = 'allow-scripts',
     id = 'line_plot',
-    height = '650',
-    width = '850',
+    height = '550',
+    width = '750',
     style = {'border-width': '0'}
 )
 
 bar = html.Iframe(
     sandbox = 'allow-scripts',
     id = 'bar_plot',
-    height = '650',
-    width = '750',
+    height = '550',
+    width = '650',
     style = {'border-width': '0'}
 )
 
@@ -141,62 +130,73 @@ heatmap = html.Iframe(
 ) 
  
 
-selectors_tab1 =  dbc.Container(fluid = True, 
-    children = [dbc.Row([
+#TAB OBJECTS AND CALLBACK
+#===================================
+
+tab1_selectors = \
+    [dbc.Row([
+            dbc.Col(children = [
+                html.H5("Damage Type"),
+                html.H6("Plot: Both"),
+                dropdown_selector_tab1,
+                html.Br()
+            ])
+        ]),
+        dbc.Row(children = [
+            dbc.Col(children = [
+                html.H5("Date Range Between 1990 - 2002"),
+                html.H6("Plot: Bird Strike Damage Over Time"),
+                rangeslider_selector,
+                html.Br(),
+                html.Br()]),
+            dbc.Col([
+                html.H5("Factor"),
+                html.H6("Plot: Effect of (factor) on Birdstrikes"),
+                dropdown_barchart,
+                html.Br()],
+            ),
+        ]),
+        dbc.Row([
+            dbc.Col([
+                html.Hr()
+            ])
+        ]),
+        dbc.Row([
+            dcc.Markdown(
+                '''
+                __Example Questions__  
+                Using the interactive tools above, try answering the following:    
+
+                - How has the number of bird strikes causing substantial damage changed between 1994 and 1999?    
+                - What is the difference between birdstrikes causing minor damage and medium damage in 1996?   
+                - What time of day results in the most birdstrikes causing substantial damage?  
+                - What is the difference between the number of large bird and small bird birdstrikes that caused no damage?  
+                '''
+            )
+        ]),
+        dbc.Row([
+            dbc.Col([
+                html.Hr()
+            ])
+        ])
+    ]
+
+tab2_selectors = \
+[
+dbc.Row([
         dbc.Col(children = [
             html.H5("Damage Type"),
-            dropdown_selector_tab1,
-            html.Br()
-        ])
-    ]),
-    dbc.Row(children = [
-        dbc.Col(children = [
-            html.H5("Date Range Between 1990 - 2002"),
-            rangeslider_selector,
-            html.Br()]),
-        dbc.Col([
-            html.H5("Factor"),
-            radio_barchart,
-            html.Br()],
-        ),
-    ]),
-    dbc.Row([
-        dbc.Col([
-            html.Hr()
-        ])
-    ]),
-    dbc.Row([
-        dcc.Markdown(
-            '''
-            __Example Questions__  
-            The following visualization can help solving many problems. Using the interactive tools above, try answering the following:    
-
-            - How has the number of bird strikes causing substantial damage changed between 1994 and 1999?    
-            - What is the difference between birdstrikes causing minor damage and medium damage in 1996?   
-            - What time of day results in the most birdstrikes causing substantial damage?  
-            - What is the difference between the number of large bird and small bird birdstrikes that cause no damage?  
-            '''
-        )
-    ]),
-    dbc.Row([
-        dbc.Col([
-            html.Hr()
-        ])
-    ]),
- ])
-
-selectors_tab2 =  dbc.Container(fluid = True, children = [dbc.Row([
-        dbc.Col(children = [
-            html.H5("Damage Type"),
+            html.H6('Plot: Birdstrikes by Location'),
             dropdown_selector_tab2,
             html.Br(),
             html.H5("Location Type"),
-            radio_heatmap,
+            html.H6('Plot: Birdstrikes by Location'),
+            dropdown_heatmap,
             html.Hr(),
             dcc.Markdown(
             '''
             __Example Questions__  
-            The following visualization can help solving many problems. Using the interactive tools above, try answering the following:    
+            Using the interactive tools above, try answering the following:    
 
             - What state experienced the most birdstrikes and in what year?  
             - What airport experienced the most birdstrikes and in what year and state did this occur?  
@@ -207,90 +207,77 @@ selectors_tab2 =  dbc.Container(fluid = True, children = [dbc.Row([
             ],
         ),
     ])
- ])
+]
 
-
-#--------------------------------------------------------------------------------
-#USING dbc TABS below - 
-#==================================
-# tab1_content = dbc.Card(
-#     dbc.CardBody(
-#         [
-#             dbc.Container(fluid = True, children = [
-#                 dbc.Row(children = [ 
-#                     dbc.Col(children = [
-#                         line], #width = 6
-#                     ),
-#                     dbc.Col(children = [
-#                         bar], #width = 6
-#                     ),
-#                 ]),           
-#             ])
-#         ]
-#     ),
-#     className="mt-3",
-# )
-
-# tab2_content = dbc.Card(
-#     dbc.CardBody(
-#         [
-#             dbc.Container(fluid = True, children = [
-#                 dbc.Row(children =[
-#                     dbc.Col(children = [
-#                         heatmap]
-#                     )
-#                 ])  
-#             ])  
-#         ]
-#     ),
-#     className="mt-3",
-# )
-
-# tabs = dbc.Tabs(
-#     [
-#         dbc.Tab(children = [tab1_content], label="Factors"),
-#         dbc.Tab(children = [tab2_content], label="Airports / States")
-#     ]
-# )
-#--------------------------------------------------------------------------------
-#USING html TABS below
-#===================================
 tabs = \
 html.Div(children = [
-    dcc.Tabs(id="tabs", value='tab-1', children=[
-        dcc.Tab(label='Tab 1 - Bird Strikes Trends & Factors', value='tab-1'),
-        dcc.Tab(label='Tab 2- Bird Strikes by Location', value='tab-2'),
-    ]),
-    html.Div(id='tabs-content')#, style = {'backgroundColor':'tan'})
+    dcc.Tabs(id="tabs", value='tab-1', 
+            style = {'padding-left': '130px',
+                    'padding-right': '130px'}, 
+            colors={"border": "white",
+                    "primary": "dodgerblue",
+                    "background": "AliceBlue"},
+            children=[
+                dcc.Tab(label='Tab 1 - Bird Strikes Trends & Factors', value='tab-1'),
+                dcc.Tab(label='Tab 2- Bird Strikes by Location', value='tab-2'),
+            ]),
+            html.Div(id='tabs-content')#, style = {'backgroundColor':'tan'})
 ])
 
 @app.callback(Output(component_id ='tabs-content',component_property = 'children'),
               [Input(component_id = 'tabs', component_property = 'value')])
 def display_tabs(tab):
+    """
+    Creates a dbc container with all elements to be displayed in a selected tab
+
+    Parameters
+    ----------
+    tab - a string; user selected from a choice of tabs and passed by callback
+
+    Return
+    ------
+    A dbc container object for a selected tab
+    """
     if tab == 'tab-1':
-        tab_1_container = dbc.Container(fluid = True, children = [
-            dbc.Row(children = [ 
-                dbc.Col(children = [
-                    line], #width = 6
-                ),
-                dbc.Col(children = [
-                    bar], #width = 6
-                ),
-            ]),           
-        ])
-        return [selectors_tab1, tab_1_container]
+        tab_1_container = \
+            dbc.Container(#style = {'padding-left': '100px', 'padding-right':'100px'}, #for future reference
+                fluid = True, 
+                children = [
+                    dbc.Row(children = [
+                                dbc.Col(width = 1), 
+                                dbc.Col([
+                                    *tab1_selectors,
+                                    dbc.Row([dbc.Col([line]), #width = 6),
+                                            dbc.Col([bar]), #width = 6),
+                                            ])
+                                        ]),
+                                dbc.Col(width = 1)
+                            ]
+                    )           
+                ]
+            )
+        return tab_1_container
         
     elif tab == 'tab-2':
-        tab_2_container = dbc.Container(fluid = True, children = [
-            dbc.Row(children =[
-                dbc.Col(children = [
-                    heatmap]
-                )
-            ])  
-        ])  
-        return [selectors_tab2, tab_2_container]
-#--------------------------------------------------------------------------------
+        tab_2_container = \
+            dbc.Container(
+                fluid = True, 
+                children = [
+                    dbc.Row(children = [
+                                dbc.Col(width = 1),
+                                dbc.Col([
+                                    *tab2_selectors,
+                                    dbc.Row([dbc.Col([heatmap])])
+                                ]),
+                                dbc.Col(width = 1)
+                            ])  
+                ]
+            )  
+        return tab_2_container
 
+
+# APP LAYOUT
+#==========================
 
 app.layout = html.Div([title_header,
                        tabs,
@@ -300,8 +287,73 @@ app.layout = html.Div([title_header,
                            '''
                        )])
 
-#--------------------------------------------------------------------------------
-# CALLBACKS
+# CUSTOM ALTAIR THEME
+#==========================
+def mds_special():
+    """
+    creates an altair theme
+
+    Parameters
+    ----------
+
+    Return
+    ------
+    A dictionary object that can be used to set an altair theme
+    """
+    font = "Arial"
+    axisColor = "#000000"
+    gridColor = "#DEDDDD"
+    return {
+        "config": {
+            "title": {
+                "fontSize": 20,
+                "font": font,
+                "anchor": "start", # equivalent of left-aligned.
+                "fontColor": "#000000"
+            },
+            'view': {
+                "height": 300, 
+                "width": 400
+            },
+            "axisX": {
+                "domain": True,
+                #"domainColor": axisColor,
+                "gridColor": gridColor,
+                "domainWidth": 1,
+                "grid": False,
+                "labelFont": font,
+                "labelFontSize": 12,
+                "labelAngle": 0, 
+                "tickColor": axisColor,
+                "tickSize": 5, # default, including it just to show you can change it
+                "titleFont": font,
+                "titleFontSize": 16,
+                "titlePadding": 10, # guessing, not specified in styleguide
+                "title": "X Axis Title (units)", 
+            },
+            "axisY": {
+                "domain": False,
+                "grid": True,
+                "gridColor": gridColor,
+                "gridWidth": 1,
+                "labelFont": font,
+                "labelFontSize": 14,
+                "labelAngle": 0, 
+                #"ticks": False, # even if you don't have a "domain" you need to turn these off.
+                "titleFont": font,
+                "titleFontSize": 16,
+                "titlePadding": 10, # guessing, not specified in styleguide
+                "title": "Y Axis Title (units)", 
+                # titles are by default vertical left of axis so we need to hack this 
+                #"titleAngle": 0, # horizontal
+                #"titleY": -10, # move it up
+                #"titleX": 18, # move it to the right so it aligns with the labels 
+            },
+        }
+    }
+
+
+# CALLBACKS & PLOT CREATION
 #==========================
 
 @app.callback(
@@ -311,6 +363,22 @@ app.layout = html.Div([title_header,
     ]
 )
 def make_line_plot(date_list, damage):
+    """
+    Generates a filled line plot based on user selection of date and damage level
+
+    Parameters
+    ----------
+    date_list - a list of 2 ints; user selected from a date slide and passed by callback
+    damage - a string; user selected from dropdown and passed by callback
+
+    Return
+    ------
+    an altair plot converted to html
+    """
+
+    alt.themes.register('mds_special', mds_special)
+    alt.themes.enable('mds_special')
+    #alt.themes.enable('none') # to return to default
     
     query_string = ""
     for user_select_damage in damage:
@@ -327,7 +395,8 @@ def make_line_plot(date_list, damage):
             nearest = True,    
             empty = 'none'     
         )
-
+        
+        #generate a line plot
         line_plot_base = alt.Chart(df_line.query(query_string),
                       title = 'Bird Strike Damage over Time'
                       ).mark_area(opacity = 0.3, interpolate = 'monotone'
@@ -338,18 +407,17 @@ def make_line_plot(date_list, damage):
                                   axis = alt.Axis(title = "Bird Strikes"), 
                                   stack = None),
                             alt.Color('damage_level', 
-                                      #sort = ['Substantial', 'Medium', 'Minor', 'None'],
                                       scale = alt.Scale(domain = ['Substantial', 'Medium', 'Minor', 'None'],
                                                         range = ['red', 'dodgerblue', 'grey', 'darkgreen']),
                                       legend = alt.Legend(orient='bottom', 
                                                             titleOrient='left',
-                                                            title = "Damage Level")),
-                                                          #orient = 'none', 
-                                                          #legendX = 675, legendY = 10, 
-                                                          #fillColor = 'white')),
-                            alt.Order('damage_level_sort', sort = 'ascending')
+                                                            title = "Damage Level",
+                                                            labelFontSize=15,
+                                                            titleFontSize=15)),
+                            alt.Order('damage_level_sort', sort = 'ascending'),
+                            alt.Tooltip(['damage_level', 'year', 'count(damage_level)'])
                       )
-                 
+        #create an interactive vertical bar that displays point values of line plots         
         line_plot = alt.layer(
                 line_plot_base,
                 
@@ -378,7 +446,7 @@ def make_line_plot(date_list, damage):
                 ).transform_filter(label),
                 
                 data = df
-            ).properties(width = 600, height = 500)
+            ).properties(width = 500, height = 400)
         
         line_plot = line_plot.to_html()
     else:
@@ -388,11 +456,27 @@ def make_line_plot(date_list, damage):
 
 @app.callback(
     dash.dependencies.Output(component_id = 'bar_plot', component_property = 'srcDoc'),
-    [dash.dependencies.Input(component_id = 'bar_radio', component_property = 'value'),
+    [dash.dependencies.Input(component_id = 'bar_dropdown', component_property = 'value'),
     dash.dependencies.Input(component_id = 'damage_types_dropdown_tab1', component_property = 'value')
     ]
 )
 def make_bar_plot(category, damage):
+    """
+    Generates a bar plot based on user selection of category and damage level
+
+    Parameters
+    ----------
+    category - a string; user selected from dropdown and passed by callback
+    damage - a string; user selected from dropdown and passed by callback
+
+    Return
+    ------
+    an altair plot converted to html
+    """
+
+    alt.themes.register('mds_special', mds_special)
+    alt.themes.enable('mds_special')
+    #alt.themes.enable('none') # to return to default
 
     query_string = ""
     for user_select_damage in damage:
@@ -403,6 +487,7 @@ def make_bar_plot(category, damage):
     main_title = 'Effect of ' + x_title + ' on Birdstrikes'
 
     if len(query_string) != 0:
+        #generate a bar plot
         bar_plot = alt.Chart(df.query(query_string),
                         title = main_title
                     ).mark_bar(opacity = 0.3
@@ -422,10 +507,12 @@ def make_bar_plot(category, damage):
                                                     range = ['red', 'dodgerblue', 'grey', 'darkgreen']),
                                     legend = alt.Legend(orient='bottom', 
                                                         titleOrient='left', 
-                                                        title = "Damage Level")),
+                                                        title = "Damage Level",
+                                                        labelFontSize=15,
+                                                        titleFontSize=15)),
                             alt.Order('damage_level_sort', sort = 'ascending'),
                             alt.Tooltip(['count(damage_level)']) 
-                    ).properties(width = 600, height = 500)
+                    ).properties(width = 500, height = 400)
         
         bar_plot = bar_plot.to_html()
     
@@ -436,11 +523,27 @@ def make_bar_plot(category, damage):
 
 @app.callback(
     dash.dependencies.Output(component_id = 'heatmap_plot', component_property = 'srcDoc'),
-    [dash.dependencies.Input(component_id = 'heatmap_radio', component_property = 'value'),
+    [dash.dependencies.Input(component_id = 'heatmap_dropdown', component_property = 'value'),
     dash.dependencies.Input(component_id = 'damage_types_dropdown_tab2', component_property = 'value')
     ]
 )
 def make_heatmap_plot(y_category, damage):
+    """
+    Generates a heatmap plot based on user selection of category and damage level
+
+    Parameters
+    ----------
+    y_category - a string; user selected from dropdown and passed by callback
+    damage - a string; user selected from dropdown and passed by callback
+
+    Return
+    ------
+    an altair plot converted to html
+    """
+
+    alt.themes.register('mds_special', mds_special)
+    alt.themes.enable('mds_special')
+    #alt.themes.enable('none') # to return to default
     
     query_string = ""
     for user_select_damage in damage:
@@ -448,7 +551,7 @@ def make_heatmap_plot(y_category, damage):
     
     query_string = query_string[: -2]
 
-    main_title = 'Bird Strikes by' + y_category.title()
+    main_title = 'Bird Strikes by ' + y_category.title()
     
     if y_category == 'state':
         plot_height = 600
@@ -456,6 +559,7 @@ def make_heatmap_plot(y_category, damage):
         plot_height = 1000
 
     if len(query_string) != 0:
+        #generate a heatmap
         heatmap_plot = alt.Chart(df.query(query_string),
                          title = main_title
                         ).mark_rect(
@@ -465,7 +569,9 @@ def make_heatmap_plot(y_category, damage):
                                 alt.Y(y_category + ':O', axis = alt.Axis(title = y_category.title())),
                                 alt.Color('count(damage_level)',
                                           scale = alt.Scale(scheme = "lighttealblue"),
-                                          legend = alt.Legend(title = "Bird Strikes")),
+                                          legend = alt.Legend(  title = "Bird Strikes",
+                                                                labelFontSize=15,
+                                                                titleFontSize=15)),
                                 alt.Tooltip(['year', 'state', 'count(damage_level)'])
                         ).properties(width = 600, height = plot_height)
         
