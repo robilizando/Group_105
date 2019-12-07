@@ -20,11 +20,12 @@ title_block = dbc.Jumbotron(
         dbc.Container(
             [
                 html.Img(src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Unico_Anello.png/1920px-Unico_Anello.png', 
-                      width='100px')
-                #html.H1("Cars! Cars! Explore Cars!", className="display-3"),
-                #html.P(
-                #    "Add a description of the dashboard",
-                #    className="lead",
+                      width='100px'),
+                html.H1("Aircraft Bird Strike in USA", className="display-3"),
+                html.P(
+                    "Add a description of the dashboard",
+                    className="lead"
+                ),
             ],
             fluid=True,
         )
@@ -33,20 +34,55 @@ title_block = dbc.Jumbotron(
 )
 
 content = dbc.Container([
-    dbc.Row([
-                dbc.Col([
-                    #SELECTORS
-                    html.Label('Choose all Damage Levels you wish to show in plots below:'),
-                    dcc.Checklist(
-                        id = 'damage_types_dropdown',
-                        options = [
-                            {'label': 'No Damage', 'value': 'None'},
-                            {'label': 'Minor Damage', 'value': 'Minor'},
-                            {'label': 'Medium Damage', 'value': 'Medium'},
-                            {'label': 'Substantial Damage', 'value': 'Substantial'}
-                        ],
-                        value = ['Minor', 'Medium', 'Substantial'], style=dict(width='71.5%', padding='20px')
-                    ), #width=6, style={'border':'1px solid'}
+
+        dbc.Row([ #Row_1: Main Damage Control
+
+            html.Label('Choose all Damage Levels you wish to show in plots below:'),
+                dcc.Checklist(
+                id = 'damage_types_dropdown',
+                options = [
+                    {'label': 'No Damage', 'value': 'None'},
+                    {'label': 'Minor Damage', 'value': 'Minor'},
+                    {'label': 'Medium Damage', 'value': 'Medium'},
+                    {'label': 'Substantial Damage', 'value': 'Substantial'}
+                ],
+                value = ['Minor', 'Medium', 'Substantial'], style=dict(width='71.5%', padding='20px')
+            ),
+        ]),    
+
+        dbc.Row([ #Row_2: Plots
+
+                #GRAPH 1: Line Plot
+                dbc.Col(
+                
+
+                    html.Iframe(
+                        sandbox = 'allow-scripts',
+                        id = 'line_plot',
+                        height = '500',
+                        width = '850',
+                        style = {'border-width': '0'}
+                    )
+                , width=5 ),
+
+                #GRAPH 2: Bar Plot
+                dbc.Col(
+
+                    html.Iframe(
+                        sandbox = 'allow-scripts',
+                        id = 'bar_plot',
+                        height = '500',
+                        width = '850',
+                        style = {'border-width': '0'},
+                    )
+
+                , width=5)
+        ]),
+
+        dbc.Row([ # Row_3: Controlers for Row 2 Plots
+
+                #Year Date Slider Controler
+                dbc.Row(
 
                     html.Label('Years:'),
 
@@ -59,7 +95,12 @@ content = dbc.Container([
                         max = 2002,
                         step = 1,
                         value = [1990, 2002]
-                    )], style=dict(width='95%', padding='10px')),
+                    )], style=dict(width='95%', padding='10px'))
+            
+                , width=5),
+
+                #Choose X Variable Controller
+                dbc.Col(
 
                     html.Label('Choose X Variable for the Bar Chart:'),
 
@@ -72,9 +113,18 @@ content = dbc.Container([
                             {'label': 'Bird Size', 'value': 'bird_size'}
                         ],
                         value = 'flight_phase'
-                    )], style=dict(width='100%', padding='30px')),
+                    )], style=dict(width='100%', padding='30px'))
+
+                , width=5)
+        ]),
+
+        dbc.Row([#Row_4: Cotrol  +  Heat Plot
+            
+                #X Variable Controler for the Heat Map
+                dbc.Col(
 
                     html.Label('Choose X Variable for the Heat Map'),
+
                     dcc.RadioItems(
                         id = 'heatmap_radio',
                         options = [
@@ -84,58 +134,19 @@ content = dbc.Container([
                         value = 'state'
                     )
 
-                ],width=2),
+                ,width=2),
 
-                dbc.Col([
-
-                    dbc.Row([
-
-                        dbc.Col(
-
-                            #ADD GRAPH 1 Line Plot
-
-                            html.Iframe(
-                                sandbox = 'allow-scripts',
-                                id = 'line_plot',
-                                height = '500',
-                                width = '850',
-                                style = {'border-width': '0'}
-                            )
-                        , width=5 ),
-
-                        dbc.Col(
-
-                        #ADD GRAPH 2 Bar Plot
-
-                            html.Iframe(
-                                sandbox = 'allow-scripts',
-                                id = 'bar_plot',
-                                height = '500',
-                                width = '850',
-                                style = {'border-width': '0'},
-                            )
-
-                        , width=5), 
-                    ]),
-
-                    dbc.Row(
-
-                        dbc.Container([
-
-                        #ADD GRAPH 3 Heat Map
-
-                         html.Iframe(
-                            sandbox = 'allow-scripts',
-                            id = 'heatmap_plot',
-                            height = '950',
-                            width = '870',
-                            style = {'border-width': '0'}
-                        )
-
-                        ])
+                #ADD GRAPH 3 Heat Map
+                dbc.Col(
+                    html.Iframe(
+                        sandbox = 'allow-scripts',
+                        id = 'heatmap_plot',
+                        height = '950',
+                        width = '870',
+                        style = {'border-width': '0'}
                     )
-                ], width=2)
-            ])
+                , width=5)
+        ])        
     ])
 
 app.layout = html.Div([title_block,
@@ -148,6 +159,7 @@ app.layout = html.Div([title_block,
     dash.dependencies.Input(component_id = 'damage_types_dropdown', component_property = 'value')
     ]
 )
+
 def make_line_plot(date_list, damage):
     
     query_string = ""
@@ -221,7 +233,7 @@ def make_line_plot(date_list, damage):
 @app.callback(
     dash.dependencies.Output(component_id = 'bar_plot', component_property = 'srcDoc'),
     [dash.dependencies.Input(component_id = 'bar_radio', component_property = 'value'),
-    dash.dependencies.Input(component_id = 'damage_types_dropdown', component_property = 'value')
+     dash.dependencies.Input(component_id = 'damage_types_dropdown', component_property = 'value')
     ]
 )
 def make_bar_plot(category, damage):
@@ -262,13 +274,12 @@ def make_bar_plot(category, damage):
     else:
         bar_plot = None
         
-    return bar_plot
-
+    # return bar_plot
 
 @app.callback(
     dash.dependencies.Output(component_id = 'heatmap_plot', component_property = 'srcDoc'),
     [dash.dependencies.Input(component_id = 'heatmap_radio', component_property = 'value'),
-    dash.dependencies.Input(component_id = 'damage_types_dropdown', component_property = 'value')
+     dash.dependencies.Input(component_id = 'damage_types_dropdown', component_property = 'value')
     ]
 )
 def make_heatmap_plot(y_category, damage):
