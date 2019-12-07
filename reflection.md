@@ -61,3 +61,5 @@ In general, the app is not all difficult to use. However, it was noticed by all 
 
 
 
+Did not implament peer feedback from thursdays lab, it was already thursday....
+
